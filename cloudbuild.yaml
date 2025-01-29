@@ -8,7 +8,7 @@ steps:
 
   # 2. Upload function code to GCS
   - name: gcr.io/cloud-builders/gsutil
-    args: ["cp", "/workspace/function.zip", "gs://my-functions-bucket/my-function-code.zip"]
+    args: ["cp", "/workspace/function.zip", "gs://bucketinteli/my-function-code.zip"]
 
   # 3. Deploy Cloud Function from GCS
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
@@ -18,7 +18,7 @@ steps:
       - deploy
       - my-cloud-function
       - --region=us-central1
-      - --source=gs://my-functions-bucket/my-function-code.zip
+      - --source=gs://bucketinteli/my-function-code.zip
       - --entry-point=myFunctionHandler
       - --runtime=nodejs20
       - --trigger-http
