@@ -1,0 +1,20 @@
+steps:
+  # 1. Upload function code to GCS
+  - name: gcr.io/cloud-builders/gsutil
+    args: ["cp", "-r", ".", "gs://my-functions-bucket/my-function-code.zip"]
+
+  # 2. Deploy Cloud Function from GCS
+  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+    args:
+      - gcloud
+      - functions
+      - deploy
+      - my-cloud-function
+      - --region=us-central1
+      - --source=gs://my-functions-bucket/my-function-code.zip
+      - --entry-point=myFunctionHandler  # Update as per your function
+      - --runtime=nodejs20  # Adjust runtime
+      - --trigger-http
+      - --allow-unauthenticated  # Adjust permissions as needed
+
+timeout: 600s
