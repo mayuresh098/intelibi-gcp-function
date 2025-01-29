@@ -1,21 +1,16 @@
 steps:
-  # 1. Install zip package
-  - name: gcr.io/cloud-builders/bash
-    script: |
-      apt-get update && apt-get install -y zip
-
-  # 2. Compress the function code manually
-  - name: gcr.io/google.com/cloudsdktool/cloud-sdk
+  # 1. Install zip package in an Ubuntu container
+  - name: ubuntu
     entrypoint: bash
     args:
       - "-c"
-      - "zip -r function.zip ."
+      - "apt-get update && apt-get install -y zip && zip -r /workspace/function.zip ."
 
-  # 3. Upload function code to GCS
+  # 2. Upload function code to GCS
   - name: gcr.io/cloud-builders/gsutil
-    args: ["cp", "function.zip", "gs://my-functions-bucket/my-function-code.zip"]
+    args: ["cp", "/workspace/function.zip", "gs://my-functions-bucket/my-function-code.zip"]
 
-  # 4. Deploy Cloud Function from GCS
+  # 3. Deploy Cloud Function from GCS
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     args:
       - gcloud
