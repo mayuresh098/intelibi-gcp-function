@@ -1,9 +1,13 @@
 steps:
-  # 1. Upload function code to GCS
-  - name: gcr.io/cloud-builders/gsutil
-    args: ["cp", "-r", ".", "gs://my-functions-bucket/my-function-code.zip"]
+  # 1. Compress the function code
+  - name: gcr.io/cloud-builders/zip
+    args: ["-r", "/workspace/function.zip", "."]
 
-  # 2. Deploy Cloud Function from GCS
+  # 2. Upload function code to GCS
+  - name: gcr.io/cloud-builders/gsutil
+    args: ["cp", "/workspace/function.zip", "gs://bucketinteli/my-function-code.zip"]
+
+  # 3. Deploy Cloud Function from GCS
   - name: gcr.io/google.com/cloudsdktool/cloud-sdk
     args:
       - gcloud
@@ -11,10 +15,14 @@ steps:
       - deploy
       - my-cloud-function
       - --region=us-central1
-      - --source=gs://my-functions-bucket/my-function-code.zip
-      - --entry-point=myFunctionHandler  # Update as per your function
-      - --runtime=nodejs20  # Adjust runtime
+      - --source=gs://bucketinteli/my-function-code.zip
+      - --entry-point=myFunctionHandler  # Replace with actual entry point
+      - --runtime=nodejs20  # Adjust runtime if needed
       - --trigger-http
       - --allow-unauthenticated  # Adjust permissions as needed
 
-timeout: 600s
+# ✅ Fix: Add logging configuration
+options:
+  logging: CLOUD_LOGGING_ONLY  # Ensures logs go to Cloud Logging
+
+timeout: 600s  # Increase timeout for larger deployments
